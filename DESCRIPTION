@@ -1,16 +1,30 @@
-Package: RTemplate
-Title: Your project
+Package: SwissClimatePheno
+Title: Swiss Climate and Phenology Indices 
 Version: 0.1
 Authors@R: 
     person(
-      given = "X",
-      family = "Y",
-      email = "x.y@example.com",
+      given = "Noemi",
+      family = "Imfeld",
+      email = "noemi.imfeld@unibe.ch",
       role = c("aut", "cre"),
-      comment = c(ORCID = "0000-0000-0000-0000")
-    )
-Description: What the package does (one paragraph).
-License: AGPL-3
+      comment = c(ORCID = "0000-0002-9645-6875")
+    ),
+    person(
+       given = "Koen",
+       family = "Hufkens",
+       email = "koen.hufkens@gmail.com",
+       role = c("ctb"),
+       comment = c(ORCID = "0000-0002-5070-8109")
+     ),
+    person(
+       given = "Stefan",
+       family = "Brönnimann",
+       email = "stefan.brönnimann@unibe.ch",
+       role = c("ctb"),
+       comment = c(ORCID = "0000-0001-9502-7991")
+     ),
+Description: Calculation of climate and phenological indices based on 258-years of daily gridded temperature and precipitation data in Switzerland.
+License: CC-BY 4.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3

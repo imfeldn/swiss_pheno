@@ -1,4 +1,3 @@
 template:
-  package: bgtemplate
   params:
     mathjax: true
