@@ -1,3 +1,4 @@
+###### SELECTION OF SERIES BY CLASS ##############
 
 #### Packages
 library(ncdf4)

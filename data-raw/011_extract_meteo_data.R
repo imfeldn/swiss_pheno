@@ -17,7 +17,7 @@ yrs <- 1951:2020
 nyr <- length(yrs)
 
 ### read grid data
-ft <- nc_open(paste(indir_nc,"CH_temp_EnKF_1951-01-01-1951-12-31.nc",sep="")) # nur f?r die Koordinaten vorzubereiten
+ft <- nc_open(paste(indir_nc,"CH_temp_EnKF_1951-01-01-1951-12-31.nc",sep="")) # nonly for coordinates
 lon <- ft$dim[[2]]$vals
 lat <- ft$dim[[3]]$vals
 nc_close(ft)
@@ -54,7 +54,6 @@ for(pv in phenovals){
   ################################################
   ### get temperature series for every station
   ################################################
-  ### Stationen in den Gitterdaten raussuchen (0.682 = L?ngengrad pro Breitengrad)
   sellon <- rep(NA,nstat)
   sellat <- rep(NA,nstat)
 

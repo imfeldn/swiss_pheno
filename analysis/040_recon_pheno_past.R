@@ -1,13 +1,12 @@
+############# RECONSTRUCT PAST PHENOLOGY BASED ON ONE MODEL CALIBRATION #########
 rm(list=ls())
 
 #### packages
 library(ncdf4);library(geosphere);library(tictoc)
 library(foreach);library(phenor)
 
-setwd("/scratch3/noemi/wear/swiss_indices/")
-
 #### directories
-outdir <- "data/pheno_recon/"
+outdir <- "data/02_pheno_recon/"
 
 ### load best models
 annealing_version <- "sa_run_2023-08-09_class123"
@@ -18,10 +17,10 @@ for (pv in phenovals){
 
   print(pv)
 
-  (load(paste0("data/calibrations/",annealing_version,"/",pv,"/aicc_mods_",pv,".RData")))
+  (load(paste0("data/03_calibrations/",annealing_version,"/",pv,"/aicc_mods_",pv,".RData")))
 
   modsel <- which(aicc_mat == min(aicc_mat), arr.ind = T)
-  (load(list.files(paste0("data/calibrations/",annealing_version,"/",pv),pattern = "model_comparison",full.names = T)))
+  (load(list.files(paste0("data/03_calibrations/",annealing_version,"/",pv),pattern = "model_comparison",full.names = T)))
   opt_params <- mod_out$modelled[[modsel[1]]]$parameters[modsel[2],]
 
   ### temperature data
@@ -57,7 +56,7 @@ for (pv in phenovals){
   ncatt_put(nc = ncnew, varid = "DOY", attname = "model", attval = modsel, prec=NA)
   ncatt_put(nc = ncnew, varid = "DOY", attname = "params", attval = paste0(opt_params,collapse="|"), prec=NA)
 
-  func <- get(modsel)
+  func <- get(rownames(modsel))
 
   registerDoParallel(cores = floor(detectCores()*0.45))
 

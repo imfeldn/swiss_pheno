@@ -16,7 +16,7 @@ AICc_nna <- function (measured, predicted, k) {
 }
 
 ### select subdir to evaluate
-subDir <- "sa_run_2023-08-09_class123"
+subDir <- "sa_run_2023-08-11_class123_longseries_earlyperiod"
 
 ### select phenophases for calibration
 # phenovals <- c("mfags13d","mprua65d","maesh13d",
@@ -61,19 +61,15 @@ for(pv in phenovals){
   save(eval_mods_train, file = paste0("data/03_calibrations/",subDir,"/",pv,"/eval_mods_train_",pv,".RData"))
 
   # evaluation testing
-
-  stn_list_test <-  stn_list_test[sapply(stn_list_test, function(x) length(x$year)) > 1]
-
   eval_mods_test <- array(NA, dim=c(length(stn_list_test),length(mods),4,length(seeds)))
   dimnames(eval_mods_test) <- list(names(stn_list_test),mods, c("rmse","bias","pcorr","nse"),seeds)
 
   for (mod in 1:length(mod_out$modelled)){
 
-    #print(mod)
     for(ss in 1:length(seeds)){
 
       pred <- pr_predict(par = mod_out$modelled[[mod]]$parameters[ss,], data = stn_list_test, model = names(mod_out$modelled)[mod])
-      pred[pred > 1000] <- NA
+      pred[pred > 1000] <- NA ## set to NA
       t <- 0
 
       for(stn in 1:length(stn_list_test)){
@@ -116,7 +112,7 @@ for(pv in phenovals){
   test <- aperm(eval_mods_test, perm = c(1,4,3,2))
 
   lwd = 0.5
-  png(paste0("data/03_calibrations/",subDir,"/",pv,"/testtrain_boxplots_",pv,"_",Sys.Date(),".png"), width = 3200, height = 1300, res = 300, pointsize = 6)
+  png(paste0("data/03_calibrations/",subDir,"/",pv,"/testtrain_boxplots_",pv,"_",Sys.Date(),".png"), width = 3800, height = 1300, res = 300, pointsize = 6)
   par(mfcol = c(2,4), mar = c(1,2,0,1), oma = c(2,2,2,2))
   rr <- c(floor(min(c(test[,,1,], train[,,1,]), na.rm = T)),ceiling(max(c(test[,,1,], train[,,1,]), na.rm = T)))
   if (rr[2] > 25) rr[2] <- 25

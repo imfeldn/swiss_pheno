@@ -16,6 +16,7 @@ data/01_climate_indices/csdi/CSDI_season_1763-2020_2023-07-27.nc
 .Ruserdata
 
 # Example code in package build process
+analysis/020_model_calibration_v2.R
 *-Ex.R
 
 # Output files from R CMD build
