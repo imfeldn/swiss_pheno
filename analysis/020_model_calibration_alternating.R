@@ -68,7 +68,7 @@ lapply(phenovals, function(pv) {
   selection <- selection |>
     dplyr::group_by(site) |>
     mutate(
-      train = ifelse(
+      test = ifelse(
         length(which(test)) > 1,
         TRUE,
         FALSE
