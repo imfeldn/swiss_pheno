@@ -64,6 +64,7 @@ for(pv in phenovals){
     # failed and the site does not exist
     # (and should be skipped)
     if(nrow(meteo_subset) == 0){
+      message(paste0("--- missing site: ", stn))
       stn_list[[stn]] <- NULL
     } else {
 
