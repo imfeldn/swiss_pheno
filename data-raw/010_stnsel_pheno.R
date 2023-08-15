@@ -70,6 +70,10 @@ for(pv in phenovals){
     }
   }
 
-  save(pheno_meta, file = paste0("data/02_pheno_net/pheno_meta_",pv,"_class",classes,".RData"))
+  save(
+    pheno_meta,
+    file = paste0("data/02_pheno_net/pheno_meta_",pv,"_class",classes,".rds"),
+    compress = "xz"
+    )
 
 }

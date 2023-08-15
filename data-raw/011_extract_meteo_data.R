@@ -102,6 +102,9 @@ for(pv in phenovals){
   # remove first year since it is not needed
   meteo_dat <- meteo_dat[,2:dim(meteo_dat)[2],]
   rownames(meteo_dat) <- obsnam
-  save(meteo_dat, file = paste0("data/02_pheno_net/meteo_",pv,"_class",classes,".RData"))
-
+  saveRDS(
+    meteo_dat,
+    file = paste0("data/02_pheno_net/meteo_",pv,"_class",classes,".rds"),
+    compress = "xz"
+    )
 }
