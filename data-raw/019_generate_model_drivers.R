@@ -34,7 +34,7 @@ for(pv in phenovals){
                           paste0("meteo_",pv,"_class123.RData")
                           )
   phenology_file <- file.path("data-raw/02_pheno_net/",
-                           paste0("meteo_",pv,"_class123.RData")
+                           paste0("pheno_meta_",pv,"_class123.RData")
                            )
 
   # load pheno data and meteorological data
