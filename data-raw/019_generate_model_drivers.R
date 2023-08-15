@@ -6,6 +6,9 @@
 # load packages
 library(phenor)
 
+# set years to cover
+allyrs <- 1951:2020
+
 # select phenophases for calibration
 # phenovals <- c("mfags13d","mprua65d","maesh13d",
 #                "mtaro65d","manen65d","mmald65d",
@@ -30,10 +33,9 @@ for(pv in phenovals){
   meteo_file <- file.path("data-raw/02_pheno_net/",
                           paste0("meteo_",pv,"_class123.RData")
                           )
-
   phenology_file <- file.path("data-raw/02_pheno_net/",
                            paste0("meteo_",pv,"_class123.RData")
-  )
+                           )
 
   # load pheno data and meteorological data
   load(meteo_file)
@@ -48,11 +50,25 @@ for(pv in phenovals){
   # convert data to phenor format
   for(stn in 1:length(stns_pv)){
 
+    # get id to process
     id <- stns_pv[stn]
+
     ind <- which(pheno_meta$nat_abbr == id & pheno_meta$reference_year < 2021)
     ltm <- apply(meteo_dat[rownames(meteo_dat) == id,,], 2, mean)
 
+    # create meteo data subset
+    meteo_subset <- meteo_dat[rownames(meteo_dat) == id, allyrs %in% pheno_meta$reference_year[ind],]
+
+    # check if this is a matrix
+    # if not subsetting the array
+    # failed and the site does not exist
+    # (and should be skipped)
+    if(nrow(meteo_subset) == 0){
+      stn_list[[stn]] <- NULL
+    } else {
+
     locs <- as.numeric(unlist(pheno_meta[ind[1],c("lat","lon")]))
+
     stn_list[[stn]]  <- list(
       site = id,
       location = locs,
@@ -60,7 +76,7 @@ for(pv in phenovals){
       ltm = ltm, # long term mean temperature for a given location / ignored
       transition_dates = pheno_meta$doy[ind],
       year = pheno_meta$reference_year[ind],
-      Ti = t(meteo_dat[rownames(meteo_dat) == id,allyrs %in% pheno_meta$reference_year[ind],]),
+      Ti = t(t_mean),
       Tmini = NULL, # tmin and max ignored / allowed to be empty
       Tmaxi = NULL, #
       Li = matrix(
@@ -70,6 +86,7 @@ for(pv in phenovals){
         ncol = length(ind)
         )
       )
+    }
   }
 
   # add names to the list elements
