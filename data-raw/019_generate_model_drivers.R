@@ -15,6 +15,11 @@ allyrs <- 1951:2020
 #                "mpyrc65d","mcora65d","mcora13d",
 #                "mtusf65d","mcarp65d","mlard13d")
 
+# select stations with very valuable ?species?
+# mprua65d	Cherry tree - full flowering 662
+# maesh13d	Horse chestnut - leaf unfolding 601
+# mfags13d	European beech - leaf unfolding 606
+
 phenovals <- c("maesh13d","mfags13d","mprua65d")
 
 # where to save the data
