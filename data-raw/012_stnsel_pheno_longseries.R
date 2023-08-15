@@ -61,6 +61,7 @@ for(pv in phenovals){
     file = paste0("data/02_pheno_net/stations_",pv,"_class",cllps(classes),"_longseries.rds"),
     compress = "xz"
     )
+
   assign(paste0("station_list_",pv), station_list_sel)
   stnidx <- match(pheno_sel_long$nat_abbr, station_list_sel$Abk.)
 

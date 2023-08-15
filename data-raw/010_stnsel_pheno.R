@@ -47,7 +47,13 @@ for(pv in phenovals){
   station_list_sel <- station_list[as.character(station_list$Abk.) %in% vval_stns,1:10]
   station_list_sel <- station_list_sel[vval_stns,] # reorder station list according to vvals
 
-  save(station_list_sel, file = paste0("data/02_pheno_net/stations_",pv,"_class",classes,".RData"))
+  # save as compressed RDS
+  saveRDS(
+    station_list_sel,
+    file = paste0("data/02_pheno_net/stations_",pv,"_class",classes,".rds"),
+    compress = "xz"
+    )
+
   assign(paste0("station_list_",pv), station_list_sel)
   stnidx <- match(pheno_sel$nat_abbr, station_list_sel$Abk.)
 
@@ -70,7 +76,8 @@ for(pv in phenovals){
     }
   }
 
-  save(
+  # save as compressed RDS
+  saveRDS(
     pheno_meta,
     file = paste0("data/02_pheno_net/pheno_meta_",pv,"_class",classes,".rds"),
     compress = "xz"
