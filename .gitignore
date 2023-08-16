@@ -6,6 +6,9 @@ nohup.out
 # Session Data files
 .RData
 
+# R package files
+.Rbuildignore
+
 # Project Data files
 data/01_climate_indices/wsdi/qtemp_th09_1871-1900.RData
 data/01_climate_indices/wsdi/WSDI_season_1763-2020_2023-07-26.nc
