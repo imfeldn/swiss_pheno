@@ -1,7 +1,5 @@
 #####  A COLLECTION OF HELPER FUNCTIONS #####
 
-library(lubridate)
-
 # extract leapyear from vector of years
 leapyear <- function(x){
   return(ifelse((x%%4==0 & x%%100!=0) | x%%400==0,TRUE,FALSE))
