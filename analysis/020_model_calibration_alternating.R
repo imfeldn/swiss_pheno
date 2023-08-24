@@ -1,8 +1,9 @@
 # Calibration routine using alternating years
 # over the whole dataset
-
+try(detach("package:phenor", unload = TRUE))
 ### load packages
-library(phenor);library(dplyr)
+library(phenor)
+library(dplyr)
 
 ### select phenophases for calibration
 # phenovals <- c("mfags13d","mprua65d","maesh13d",
@@ -26,7 +27,8 @@ dir.create(
 )
 
 ### select seeds, model, years
-seeds <- c(1,7,22,31,45,57,63,99)
+#seeds <- c(1,7,22,31,45,57,63,99)
+seeds <- 1
 mods <-  c("LIN", "TT", "TTs", "PTT", "PTTs","M1","M1s","AT")
 
 # list driver files
@@ -77,27 +79,24 @@ lapply(phenovals, function(pv) {
     )
 
   # subset training and testing datasets
-  stn_list_train <- pr_fm_subset(drivers, selection$train)
+  stn_list_train <<- pr_fm_subset(drivers, selection$train)
   stn_list_test <- pr_fm_subset(drivers, selection$test)
 
   print("fit models")
+  nr_seeds <- length(seeds)
 
   mod_out <- pr_fit_comparison(
-    random_seeds = seeds,
+    random_seeds = 1,
     models = mods,
     data = stn_list_train,
-    method = "GenSA",
+    method = "bayesiantools",
     control = list(
-      max.call = 4,
-      temperature = 1000000000
-    ),
-    par_ranges = system.file(
-      "extdata",
-      "parameter_ranges.csv",
-      package = "phenor",
-      mustWork = TRUE
-    ),
-    ncores = length(seeds)
+      sampler = "DEzs",
+      settings = list(
+        burnin = 1000,
+        iterations = 4000
+        )
+    )
   )
 
   ### set 9999 to NA for evaluation
