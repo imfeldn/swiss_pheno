@@ -7,3 +7,5 @@ Climate indices and phenological reconstructions show few changes in the mean du
 Studying such historical events is valuable since similar atmospheric conditions can also nowadays lead to cold springs affecting vegetation growth and agricultural production. 
 
 > Add information on submitted article and citations of data sets.
+
+![](https://github.com/imfeldn/swiss_pheno/blob/9050277207a75baa4151e755d61afafd1c17bc18/manuscript/figures/Figure_Phenomaps_2023-08-10.png)
