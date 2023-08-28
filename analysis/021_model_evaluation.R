@@ -8,15 +8,18 @@ library(phenor);library(RColorBrewer)
 source("R/helpfuns.R")
 
 AICc_nna <- function (measured, predicted, k) {
-  n <- length(measured)
-  RSS <- sum((measured - predicted)^2, na.rm = T)
+  message("only use if you compare same measurements")
+  nnaind <- which(!is.na(measured))
+  n <- length(measured[nnaind])
+  RSS <- sum((measured[nnaind] - predicted[nnaind])^2)
   AIC <- 2 * k + n * log(RSS/n)
   AICc <- AIC + (2 * k * (k + 1))/(n - k - 1)
   return(list(AIC = AIC, AICc = AICc))
 }
 
 ### select subdir to evaluate
-subDir <- "sa_run_2023-08-11_class123_longseries_earlyperiod"
+classes <- "123"
+subDir <- paste0("data/03_calibrations/sa_run_2023-08-15_class",classes)
 
 ### select phenophases for calibration
 # phenovals <- c("mfags13d","mprua65d","maesh13d",
@@ -33,9 +36,11 @@ for(pv in phenovals){
   print(pv)
 
   # load model parameters, testing and training data
-  load(paste0("data/03_calibrations/",subDir,"/",pv,"/model_comparison_",pv,".RData"))
-  load(paste0("data/03_calibrations/",subDir,"/",pv,"/stn_list_train_",pv,".RData"))
-  load(paste0("data/03_calibrations/",subDir,"/",pv,"/stn_list_test_",pv,".RData"))
+  mod_out <- readRDS(paste0(subDir,"/",pv,"/model_comparison_",pv,".rds"))
+  stn_list_train <- readRDS(paste0(subDir,"/",pv,"/stn_list_train_",pv,".rds"))
+  stn_list_test <- readRDS(paste0(subDir,"/",pv,"/stn_list_test_",pv,".rds"))
+  train_sites <- unique(stn_list_train$site)
+  test_sites <- unique(stn_list_test$site)
 
   seeds <- 1:nrow(mod_out$modelled$LIN$parameters)
   mods <- names(mod_out$modelled)
@@ -45,21 +50,21 @@ for(pv in phenovals){
   dimnames(eval_mods_train) <- list(names(stn_list_train),mods, c("rmse","bias","pcorr","nse"), seeds)
 
   for (mod in 1:length(mod_out$modelled)){
-
     for(ss in 1:length(seeds)){
-
-      t <- 0
       for(stn in 1:length(stn_list_train)){
-        stnind <- (t + 1):(t + length(stn_list_train[[stn]]$transition_dates))
-        t <- stnind[length(stnind)]
-        obs <- stn_list_train[[stn]]$transition_dates
-        pred <- mod_out$modelled[[mod]]$predicted_values[ss,]
-        eval_mods_train[stn,mod,,ss] <- round(eval_recon(rec = pred[stnind], obs)[c("rmse","bias","pcorr","nse"),],3)
+        stnind <- stn_list_train$site == train_sites[stn]
+        obs <- stn_list_train$transition_dates[stnind]
+        pred <- mod_out$modelled[[mod]]$predicted_values[ss,stnind]
+        eval_mods_train[stn,mod,,ss] <- round(eval_recon(rec = pred, obs)[c("rmse","bias","pcorr","nse"),],3)
       }
     }
   }
-  save(eval_mods_train, file = paste0("data/03_calibrations/",subDir,"/",pv,"/eval_mods_train_",pv,".RData"))
 
+  saveRDS(
+    eval_mods_train,
+    file = file.path(subDir,pv,paste0("model_evaluation_train_",pv,".rds")),
+    compress = "xz"
+  )
   # evaluation testing
   eval_mods_test <- array(NA, dim=c(length(stn_list_test),length(mods),4,length(seeds)))
   dimnames(eval_mods_test) <- list(names(stn_list_test),mods, c("rmse","bias","pcorr","nse"),seeds)
@@ -70,17 +75,20 @@ for(pv in phenovals){
 
       pred <- pr_predict(par = mod_out$modelled[[mod]]$parameters[ss,], data = stn_list_test, model = names(mod_out$modelled)[mod])
       pred[pred > 1000] <- NA ## set to NA
-      t <- 0
 
       for(stn in 1:length(stn_list_test)){
-        stnind <- (t + 1):(t + length(stn_list_test[[stn]]$transition_dates))
-        t <- stnind[length(stnind)]
-        obs <- stn_list_test[[stn]]$transition_dates
+        stnind <- stn_list_test$site == test_sites[stn]
+        obs <- stn_list_test$transition_dates[stnind]
         eval_mods_test[stn,mod,,ss] <- round(eval_recon(rec = pred[stnind], obs)[c("rmse","bias","pcorr","nse"),],3)
         }
     }
   }
-  save(eval_mods_test, file = paste0("data/03_calibrations/",subDir,"/",pv,"/eval_mods_test_",pv,".RData"))
+
+  saveRDS(
+    eval_mods_test,
+    file = file.path(subDir,pv,paste0("model_evaluation_test_",pv,".rds")),
+    compress = "xz"
+  )
 
   ### calculate AICc
   aicc_mat <- array(NA, dim = c(length(mods),length(seeds)));rownames(aicc_mat) <- mods
@@ -90,15 +98,11 @@ for(pv in phenovals){
     aicc_mat[mm,] <- sapply(1:length(seeds), function(x) {AICc_nna(measured = mod_out$measured, predicted = mod_out$modelled[[mm]]$predicted_values[x,], k = k)$AICc})
   }
 
-  save(aicc_mat, file = paste0("data/03_calibrations/",subDir,"/",pv,"/aicc_mods_",pv,".RData"))
-
-  # overall model output
-  # feval <- sapply(mod_out$modelled, function(x){
-  #   dat <- x$predicted_values
-  #   return(sapply(1:length(seeds), function(y) round(eval_recon(dat[y,],mod_out$measured),3)))
-  # })
-  # rownames(feval) <- rep(c("rmse","mae","corr","nse","bias"), length(seeds))
-  # write.table(feval, file = paste0("data/calibrations/",subDir,"/",pv,"/meaneval_mods_train_",pv,".txt"))
+  saveRDS(
+    aicc_mat,
+    file = file.path(subDir,pv,paste0("model_evaluation_test_",pv,".rds")),
+    compress = "xz"
+  )
 
   # plot the evaluation ###
   print("plot eval")

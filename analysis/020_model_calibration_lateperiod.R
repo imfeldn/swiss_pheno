@@ -1,7 +1,7 @@
 ##### CALIBRATIONS OF DIFFERENT PROCESS-BASED PHENOLOGICAL MODELS #######
 
 ### load packages
-library(phenor)
+library(phenor);library(dplyr)
 
 ### select phenophases for calibration
 # phenovals <- c("mfags13d","mprua65d","maesh13d",
